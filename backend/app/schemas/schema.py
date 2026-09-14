@@ -23,3 +23,6 @@ class DeploymentResponse(BaseModel):
     commit_sha: str
     created_at: datetime
     model_config = ConfigDict(from_attributes=True)
+    
+class DeployRequest(BaseModel):
+    commit_sha: str

@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from ..database import get_db
-from ..models.application import Application
-from ..schemas.schema import ApplicationCreate, ApplicationResponse
+from backend.app.database import get_db
+from backend.app.models.application import Application
+from backend.app.schemas.schema import ApplicationCreate, ApplicationResponse, DeploymentResponse
 
 router = APIRouter(
     prefix="/applications",
@@ -56,3 +56,12 @@ def update_application(application_id: int, updated_application: ApplicationCrea
     db.commit()
     db.refresh(application)
     return application
+
+@router.get("/{application_id}/deployments",response_model=list[DeploymentResponse])
+def get_deployments_for_application(application_id: int, db: Session = Depends(get_db)):
+    application = db.query(Application).filter(Application.id == application_id).first()
+    if not application:
+        raise HTTPException(status_code=404, detail="Application not found")
+    deployments = application.deployments
+    return deployments
+

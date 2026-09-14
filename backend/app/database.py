@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-DATABASE_URL = "postgresql://forge:forge@localhost:5432/forge"
+DATABASE_URL = "postgresql://forge:forge@forge-postgres:5432/forge"
 
 engine = create_engine(DATABASE_URL)
 # Create a session factory that will be used to create new database sessions. 
