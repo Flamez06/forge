@@ -18,7 +18,7 @@ def test_application():
     data = response.json()
 
     assert data["name"] == "Test App"
-    assert data["repository_url"] == "https:/gi/github.com/test/repo"
+    assert data["repository_url"] == "https://github.com/test/repo"
     assert "id" in data
     
     client.delete(f"/applications/{data['id']}")
