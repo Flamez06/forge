@@ -5,6 +5,7 @@ from pathlib import Path
 from backend.app.services.build import build_application
 from backend.app.models.application import Application
 from backend.app.database import get_db
+from backend.app.redis import redis_client
 from backend.app.models.deployment import Deployment
 from backend.app.schemas.schema import DeploymentResponse, DeployRequest
 
@@ -37,15 +38,19 @@ def create_deployment_for_application(application_id: int, data: DeployRequest, 
     application = db.query(Application).filter(Application.id == application_id).first()
     if not application:
         raise HTTPException(status_code=404, detail="Application not found")
+    
     new_deployment = Deployment(
         application_id=application_id,
         commit_sha=data.commit_sha,
         status = "building"
     )
-       
+    
     db.add(new_deployment)
     db.commit()
     db.refresh(new_deployment)
+    
+    redis_client.xadd("build_jobs", {"deployment_id": new_deployment.id, "application_id": application_id, "commit_sha": data.commit_sha, "repository_url": application.repository_url})
+    
     return new_deployment
 
 @router.delete("/{deployment_id}", response_model=DeploymentResponse)

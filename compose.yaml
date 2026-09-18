@@ -1,0 +1,38 @@
+services:
+  api:
+    build: .
+    container_name: forge-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/workspace
+    depends_on:
+      - postgres
+      - redis
+    command: uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  postgres:
+    image: postgres:latest
+    container_name: forge-postgres
+    environment:
+      POSTGRES_USER: forge
+      POSTGRES_PASSWORD: forge
+      POSTGRES_DB: forge
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:latest
+    container_name: forge-redis
+    ports:
+      - "6379:6379"
+  
+  worker:
+    build: .
+    command: python -u worker/build_worker.py
+    volumes:
+      - .:/workspace
+    working_dir: /workspace
+    depends_on:
+      - redis
+  
