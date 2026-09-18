@@ -17,9 +17,14 @@ jobs:
           POSTGRES_DB: forge
         ports:
           - 5432:5432
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
 
     env:
       DATABASE_URL: postgresql://forge:forge@localhost:5432/forge
+      REDIS_HOST : localhost
 
     steps:
       - name: Checkout repository
