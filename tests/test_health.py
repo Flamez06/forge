@@ -9,3 +9,8 @@ def test_health():
     # Raise error if the result of the statement is not true.
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
+    
+def test_redis():
+    response = client.get("/redis-test")
+    assert response.status_code == 200
+    assert response.json() == {"redis": "hello"}

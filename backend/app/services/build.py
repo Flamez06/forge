@@ -9,8 +9,10 @@ def build_application(repository_url: str, commit_sha: str, build_directory: Pat
         build_directory,
         commit_sha
     )
-    image_name = f"forge/app-{application_id}:{resolved_sha}"
-    registry_image = f"{registry_username}/forge-app:{resolved_sha}"
+    image_name = f"forge-app-{application_id}:{resolved_sha}"
+    # Part before : is resolved as docker hub repository name 
+    registry_image = f"{registry_username}/forge-app:app-{application_id}-{resolved_sha}"
+
     build_image(
         build_directory,
         image_name

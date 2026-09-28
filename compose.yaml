@@ -9,6 +9,9 @@ services:
     depends_on:
       - postgres
       - redis
+    environment:
+      PYTHONPATH: /workspace
+      REDIS_HOST: redis
     command: uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
 
   postgres:
@@ -26,13 +29,19 @@ services:
     container_name: forge-redis
     ports:
       - "6379:6379"
-  
+
   worker:
     build: .
     command: python -u worker/build_worker.py
     volumes:
       - .:/workspace
+      - /var/run/docker.sock:/var/run/docker.sock
     working_dir: /workspace
+    environment:
+      PYTHONPATH: /workspace
+      REDIS_HOST: redis
+      DOCKER_USERNAME: ${DOCKER_USERNAME}
+      DOCKER_PASSWORD: ${DOCKER_PASSWORD}
     depends_on:
       - redis
-  
+      - postgres
