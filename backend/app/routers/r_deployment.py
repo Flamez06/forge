@@ -49,7 +49,7 @@ def create_deployment_for_application(application_id: int, data: DeployRequest, 
     db.commit()
     db.refresh(new_deployment)
     
-    redis_client.xadd("build_jobs", {"deployment_id": new_deployment.id, "application_id": application_id, "commit_sha": data.commit_sha, "repository_url": application.repository_url})
+    redis_client.xadd("build_jobs", {"deployment_id": new_deployment.id, "application_id": application_id, "commit_sha": data.commit_sha,"attempts": 0, "repository_url": application.repository_url})
     
     return new_deployment
 
