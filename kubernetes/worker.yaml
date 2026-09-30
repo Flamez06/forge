@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: forge-worker
+  labels:
+    app: forge-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: forge-worker
+  template:
+    metadata:
+      labels:
+        app: forge-worker
+    spec:
+      containers:
+        - name: forge-worker
+          image: forge-worker:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - python
+            - -u
+            - worker/build_worker.py
+          env:
+            - name: DATABASE_URL
+              value: postgresql://forge:forge@postgres:5432/forge
+            - name: REDIS_URL
+              value: redis://redis:6379/0
+            - name: PYTHONPATH
+              value: /workspace
+          envFrom:
+            - secretRef:
+                name: docker-credentials
+      restartPolicy: Always
